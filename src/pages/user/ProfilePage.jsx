@@ -14,32 +14,23 @@ const MOCK_ORGS = [
 export default function ProfilePage() {
 
   const navigate = useNavigate();
-  const { user, donations, sendDonationToOrg, logout } = useUser();
 
-  // שק שנבחר לשליחה
-  const [selectedBag, setSelectedBag] = useState(null);
-  // עמותה שנבחרה
-  const [selectedOrg, setSelectedOrg] = useState(null);
-  // חיפוש עמותה
-  const [search, setSearch] = useState("");
-  // הצלחת שליחה
-  const [sent, setSent] = useState(false);
+  // הוספנו getOrgSettings לשליפת הגדרות עמותה
+  const { user, donations, sendDonationToOrg, logout, getOrgSettings } = useUser();
+
+  const [selectedBag, setSelectedBag]   = useState(null);
+  const [selectedOrg, setSelectedOrg]   = useState(null);
+  const [search, setSearch]             = useState("");
+  const [sent, setSent]                 = useState(false);
 
   const filteredOrgs = MOCK_ORGS.filter(org =>
     org.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ─── שליחת תרומה לעמותה ──────────────────────────────
   const handleSendToOrg = () => {
     if (!selectedBag || !selectedOrg) return;
-
-    // שולחים את השק לעמותה דרך Context
     sendDonationToOrg(selectedBag, selectedOrg);
-
-    // מציגים הודעת הצלחה
     setSent(true);
-
-    // מאפסים את הבחירה אחרי 3 שניות
     setTimeout(() => {
       setSent(false);
       setSelectedBag(null);
@@ -52,7 +43,6 @@ export default function ProfilePage() {
     return null;
   }
 
-  // כל השקים מכל התרומות ברשימה אחת שטוחה
   const allBags = donations.flatMap(donation =>
     donation.bags.map(bag => ({
       ...bag,
@@ -136,7 +126,8 @@ export default function ProfilePage() {
               <p className="text-rw-sub text-sm">עדיין לא העלית שקים</p>
               <button
                 onClick={() => navigate("/upload")}
-                className="mt-3 bg-rw-btn text-white rounded-xl px-4 py-2 text-sm font-semibold"
+                className="mt-3 bg-rw-btn text-white rounded-xl px-4 py-2
+                           text-sm font-semibold"
               >
                 העלי שק
               </button>
@@ -150,7 +141,8 @@ export default function ProfilePage() {
                   className={`bg-rw-card rounded-2xl p-4 shadow-sm
                              flex items-center justify-between cursor-pointer
                              border-2 transition-all
-                             ${selectedBag?.id === bag.id && selectedBag?.donationId === bag.donationId
+                             ${selectedBag?.id === bag.id &&
+                               selectedBag?.donationId === bag.donationId
                                ? "border-rw-btn"
                                : "border-transparent"}`}
                 >
@@ -159,7 +151,8 @@ export default function ProfilePage() {
                       שק {index + 1}
                     </span>
                     <span className="text-xs text-rw-sub">
-                      {[bag.size, bag.gender, bag.condition].filter(Boolean).join(" · ")}
+                      {[bag.size, bag.gender, bag.condition]
+                        .filter(Boolean).join(" · ")}
                     </span>
                     <span className="text-xs text-rw-sub">{bag.donationDate}</span>
                   </div>
@@ -204,39 +197,81 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {/* רשימת עמותות */}
-          <div className="flex flex-col gap-2">
-            {filteredOrgs.map((org) => (
-              <div
-                key={org.id}
-                onClick={() => setSelectedOrg(org)}
-                className={`bg-rw-card rounded-2xl shadow-sm p-4
-                           flex items-center justify-between cursor-pointer
-                           border-2 transition-all
-                           ${selectedOrg?.id === org.id
-                             ? "border-rw-btn"
-                             : "border-transparent"}`}
-              >
-                <div className="flex items-center gap-2">
-                  {selectedOrg?.id === org.id && (
-                    <span className="text-rw-btn text-lg">✓</span>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className="font-semibold text-rw-title text-sm">
-                    {org.name}
-                  </span>
-                  <span className="text-xs text-rw-sub">
+          {/* ── רשימת עמותות עם סטטוס ── */}
+          <div className="flex flex-col gap-3">
+            {filteredOrgs.map((org) => {
+
+              // שולפים הגדרות של כל עמותה מה-Context
+              const settings = getOrgSettings(org.name);
+
+              return (
+                <div
+                  key={org.id}
+                  onClick={() => setSelectedOrg(org)}
+                  className={`bg-rw-card rounded-2xl shadow-sm p-4
+                             flex flex-col gap-2 cursor-pointer
+                             border-2 transition-all
+                             ${selectedOrg?.id === org.id
+                               ? "border-rw-btn"
+                               : "border-transparent"}`}
+                >
+                  {/* שורה עליונה: שם + סימון בחירה */}
+                  <div className="flex items-center justify-between">
+                    {selectedOrg?.id === org.id && (
+                      <span className="text-rw-btn text-lg">✓</span>
+                    )}
+                    <span className="font-semibold text-rw-title text-sm">
+                      {org.name}
+                    </span>
+                  </div>
+
+                  {/* מיקום */}
+                  <span className="text-xs text-rw-sub text-right">
                     📍 {org.city} · {org.area}
                   </span>
-                  <span className="text-xs text-rw-sub">{org.types}</span>
+
+                  {/* סוגי תרומות */}
+                  <span className="text-xs text-rw-sub text-right">
+                    {org.types}
+                  </span>
+
+                  {/* ── סטטוס זמינות ואופן קבלה ── */}
+                  <div className="flex flex-wrap gap-2 justify-end mt-1">
+
+                    {/* סטטוס זמינות */}
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium
+                      ${settings.isAvailable
+                        ? "bg-green-50 text-green-600"
+                        : "bg-red-50 text-red-400"}`}>
+                      {settings.isAvailable
+                        ? "✓ זמינה לתרומות"
+                        : "✗ לא זמינה כרגע"}
+                    </span>
+
+                    {/* איסוף מהבית */}
+                    {settings.acceptsPickup && (
+                      <span className="text-xs px-2 py-1 rounded-full
+                                       bg-blue-50 text-blue-500 font-medium">
+                        🚗 איסוף מהבית
+                      </span>
+                    )}
+
+                    {/* הגעה לעמותה */}
+                    {settings.acceptsDropoff && (
+                      <span className="text-xs px-2 py-1 rounded-full
+                                       bg-purple-50 text-purple-500 font-medium">
+                        🏢 הגעה לעמותה
+                      </span>
+                    )}
+
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* ── כפתור שליחה – מופיע רק כשנבחרו שק + עמותה ── */}
+        {/* ── כפתור שליחה ── */}
         {selectedBag && selectedOrg && !sent && (
           <div className="bg-rw-card rounded-2xl shadow-sm p-4">
             <div className="flex flex-col gap-1 mb-4 items-end">

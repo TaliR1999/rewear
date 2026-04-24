@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
 
 export default function RegisterOrgPage() {
 
@@ -9,9 +10,10 @@ export default function RegisterOrgPage() {
   const [phone, setPhone]             = useState("");
   const [email, setEmail]             = useState("");
   const [password, setPassword]       = useState("");
-  const [address, setAddress]         = useState(""); // ← חדש
+  const [address, setAddress]         = useState("");
   const [logoPreview, setLogoPreview] = useState(null);
 
+  const { setUser } = useUser();
   const navigate = useNavigate();
 
   const handleLogoChange = (e) => {
@@ -29,7 +31,20 @@ export default function RegisterOrgPage() {
       alert("הסיסמה חייבת להכיל לפחות 6 תווים");
       return;
     }
-    console.log("עמותה נרשמה:", { orgName, orgNumber, contact, phone, email, address });
+
+    const userData = {
+      orgName,
+      orgNumber,
+      contact,
+      phone,
+      email,
+      address,
+      type: "org",
+    };
+
+    localStorage.setItem("rewear_user", JSON.stringify(userData));
+    setUser(userData);
+    window.location.href = "/org/home";
   };
 
   return (
@@ -52,8 +67,10 @@ export default function RegisterOrgPage() {
           ) : (
             <span className="text-3xl">📷</span>
           )}
-          <input type="file" accept="image/*" onChange={handleLogoChange}
-            className="absolute inset-0 opacity-0 cursor-pointer" />
+          <input
+            type="file" accept="image/*" onChange={handleLogoChange}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+          />
         </div>
         <p className="text-rw-green text-sm mt-2">העלאת לוגו העמותה</p>
       </div>
@@ -61,7 +78,6 @@ export default function RegisterOrgPage() {
       {/* טופס */}
       <div className="bg-rw-card rounded-2xl shadow-sm p-6 flex flex-col gap-5">
 
-        {/* שם העמותה */}
         <div className="flex flex-col gap-1">
           <label className="text-sm text-rw-sub text-right">שם העמותה</label>
           <input type="text" placeholder="שם העמותה" value={orgName}
@@ -70,7 +86,6 @@ export default function RegisterOrgPage() {
                        text-sm text-right outline-none bg-rw-input focus:border-rw-btn" />
         </div>
 
-        {/* מספר עמותה */}
         <div className="flex flex-col gap-1">
           <label className="text-sm text-rw-sub text-right">מספר עמותה (ח.פ)</label>
           <input type="text" placeholder="מספר עמותה (ח.פ)" value={orgNumber}
@@ -79,7 +94,6 @@ export default function RegisterOrgPage() {
                        text-sm text-left outline-none bg-rw-input focus:border-rw-btn" />
         </div>
 
-        {/* איש קשר + טלפון בשורה אחת */}
         <div className="flex flex-row gap-3">
           <div className="flex flex-col gap-1 flex-1">
             <label className="text-sm text-rw-sub text-right">איש קשר</label>
@@ -97,7 +111,6 @@ export default function RegisterOrgPage() {
           </div>
         </div>
 
-        {/* אימייל */}
         <div className="flex flex-col gap-1">
           <label className="text-sm text-rw-sub text-right">אימייל</label>
           <input type="email" placeholder="אימייל" value={email}
@@ -106,7 +119,6 @@ export default function RegisterOrgPage() {
                        text-sm text-left outline-none bg-rw-input focus:border-rw-btn" />
         </div>
 
-        {/* סיסמה */}
         <div className="flex flex-col gap-1">
           <label className="text-sm text-rw-sub text-right">סיסמה</label>
           <input type="password" placeholder="מינימום 6 תווים" value={password}
@@ -115,7 +127,6 @@ export default function RegisterOrgPage() {
                        text-sm text-right outline-none bg-rw-input focus:border-rw-btn" />
         </div>
 
-        {/* כתובת ← חדש */}
         <div className="flex flex-col gap-1">
           <label className="text-sm text-rw-sub text-right">כתובת</label>
           <input type="text" placeholder="עיר / כתובת" value={address}
@@ -124,7 +135,6 @@ export default function RegisterOrgPage() {
                        text-sm text-right outline-none bg-rw-input focus:border-rw-btn" />
         </div>
 
-        {/* כפתור */}
         <button onClick={handleRegister}
           className="w-full bg-rw-btn text-white rounded-xl py-3
                      text-sm font-semibold mt-2 active:bg-rw-btn-hover">
