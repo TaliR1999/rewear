@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import OrgBottomNav from "../../components/OrgBottomNav";
 
 const KPI_DATA = [
   { id: 1, label: "ציון אימפקט",    value: "98",    change: "+6% החודש",  positive: true, icon: "🌿" },
@@ -19,31 +20,6 @@ const AVAILABLE_STORES = [
   { id: 3, name: "מסע בזמן",      city: "ירושלים", items: "בגדים, ספרים, כלי בית" },
   { id: 4, name: "החנות הירוקה",  city: "נתניה",   items: "בגדי ילדים"            },
 ];
-
-function OrgBottomNav({ active }) {
-  const navigate = useNavigate();
-  const items = [
-    { id: "home",     icon: "🏠", label: "בית",    path: "/org/home" },
-    { id: "requests", icon: "📋", label: "בקשות",  path: "/org/requests" },
-    { id: "messages", icon: "💬", label: "הודעות", path: "/org/messages" },
-    { id: "profile",  icon: "👤", label: "פרופיל", path: "/org/profile" },
-  ];
-  return (
-    <nav className="sticky bottom-0 w-full bg-rw-card border-t border-rw-border
-                    flex justify-around items-center py-3 px-4 z-50">
-      {items.map((item) => (
-        <button key={item.id} onClick={() => navigate(item.path)}
-          className="flex flex-col items-center gap-1">
-          <span className="text-xl">{item.icon}</span>
-          <span className={`text-xs font-semibold
-            ${active === item.id ? "text-rw-btn" : "text-rw-sub"}`}>
-            {item.label}
-          </span>
-        </button>
-      ))}
-    </nav>
-  );
-}
 
 export default function OrgHomePage() {
 
@@ -293,4 +269,3 @@ export default function OrgHomePage() {
     </div>
   );
 }
-
