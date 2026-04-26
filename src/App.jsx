@@ -16,6 +16,9 @@ import OrgHomePage        from "./pages/org/OrgHomePage";
 import OrgRequestsPage    from "./pages/org/OrgRequestsPage";
 import OrgPickupsPage     from "./pages/org/OrgPickupsPage";
 
+// ─── Shop ─────────────────────────────────────────────────────────────────────
+import ShopHomePage       from "./pages/shop/ShopHomePage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -25,7 +28,7 @@ function App() {
         <Route path="/register"         element={<RegisterTypePage />} />
         <Route path="/register/private" element={<RegisterPrivatePage />} />
         <Route path="/register/org"     element={<RegisterOrgPage />} />
-        <Route path="/register/shop"    element={<RegisterShopPage />} />
+        <Route path="/register/Shop"    element={<RegisterShopPage />} />
 
         {/* ── User ── */}
         <Route path="/home"             element={<HomePage />} />
@@ -36,9 +39,14 @@ function App() {
         <Route path="/org/requests"     element={<OrgRequestsPage />} />
         <Route path="/org/pickups"      element={<OrgPickupsPage />} />
         {/* /org/profile יתווסף בהמשך */}
+
+        {/* ── Shop ── */}
+        <Route path="/shop/home"        element={<ShopHomePage />} />
+        {/* /shop/inventory, /shop/partners, /shop/profile יתווספו בהמשך */}
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+

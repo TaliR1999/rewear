@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// המסך זהה לעמותה, רק עם שינויים קטנים:
-// - כותרת שונה
-// - placeholder של לוגו שונה
-// - אין מספר עמותה, במקומו מספר עוסק/ח.פ
-
 export default function RegisterShopPage() {
 
-  const [shopName, setShopName]       = useState(""); // שם החנות
-  const [bizNumber, setBizNumber]     = useState(""); // מספר עוסק/ח.פ
-  const [contact, setContact]         = useState(""); // איש קשר
-  const [phone, setPhone]             = useState(""); // טלפון
-  const [email, setEmail]             = useState(""); // אימייל
-  const [password, setPassword]       = useState(""); // סיסמה
-  const [address, setAddress]         = useState(""); // כתובת
-  const [logoPreview, setLogoPreview] = useState(null); // תצוגה מקדימה של לוגו
+  const [shopName, setShopName]       = useState("");
+  const [bizNumber, setBizNumber]     = useState("");
+  const [contact, setContact]         = useState("");
+  const [phone, setPhone]             = useState("");
+  const [email, setEmail]             = useState("");
+  const [password, setPassword]       = useState("");
+  const [address, setAddress]         = useState("");
+  const [logoPreview, setLogoPreview] = useState(null);
 
   const navigate = useNavigate();
 
@@ -35,6 +30,9 @@ export default function RegisterShopPage() {
       return;
     }
     console.log("חנות נרשמה:", { shopName, bizNumber, contact, phone, email, address });
+
+    // ✅ תיקון: ניווט לדף הבית של החנות אחרי הרשמה מוצלחת
+    navigate("/shop/home");
   };
 
   return (
